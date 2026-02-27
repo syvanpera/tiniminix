@@ -1,36 +1,104 @@
 # TiniMiniX
 
-A minimal, reproducible NixOS configuration with Niri, Ghostty, and Zen Browser.
+My NixOS environment configuration.
 
-## Structure
-- `flake.nix`: Entrypoint and inputs.
-- `hosts/`: Host-specific and common system configurations.
-- `modules/`: Optional hardware modules (e.g., NVIDIA).
-- `home/`: User configuration (Home Manager).
-- `disko.nix`: Automated BTRFS partitioning (CachyOS style).
+## Features
 
-## Usage (One-Command Install)
+- 🗂️ **BTRFS Filesystem:** Modern copy-on-write filesystem with:
+  - Transparent compression (zstd)
+  - Multiple subvolumes for flexible management
+- 🚀 **Modern Bootloader:** Limine by default
+- 🎯 **Multi-Machine Support:** Easy configuration management for multiple machines
+- 📦 **Flake-Based:** Reproducible builds with Nix flakes
+- 🔧 **Disko Integration:** Automated disk partitioning and formatting
 
-To install this on a new machine from a NixOS installer:
+## Quick Start
 
-1. **Format and Install** (Using Disko):
+1. Boot from a NixOS USB drive
+2. Clone this repository:
    ```bash
-   # Replace `hostname` with `laptop` or `laptop-nvidia`
-   # Replace `/dev/nvme0n1` with your actual disk
-   sh <(curl -L https://nixos.org/nix/install) --daemon
-   nix run github:nix-community/disko#disko-install -- --flake github:syvanpera/tiniminix#laptop --disk main /dev/nvme0n1
+   git clone https://github.com/syvanpera/tiniminix
+   cd tiniminix
+   ```
+4. Run the installation:
+   ```bash
+   ./install.sh <hostname> <disk>
+   # For example:
+   ./install.sh tuxedo /dev/nvme0n1
    ```
 
-2. **Manual Install** (After partitioning):
+For more detailed instructions, see [INSTALL.md](INSTALL.md).
+
+## Repository Structure
+
+```
+.
+├── flake.nix                          # Main flake configuration
+├── modules/
+│   ├── common.nix                     # Shared configuration across all machines
+│   ├── disko.nix                      # Disko configuration
+│   └── nvidia.nix                     # NVidia GPU module
+└── hosts/
+    └── tuxedo.nix                     # Host-specific configuration
+```
+
+## Disk Layout
+
+The default disk layout uses:
+
+- **ESP (1024MB):** EFI System Partition mounted at `/boot`
+- **Main Partition:** Contains BTRFS filesystem with subvolumes:
+  - `@` - Root filesystem (`/`)
+  - `@home` - Home directories (`/home`)
+  - `@nix` - Nix store (`/nix`)
+  - `@log` - System logs (`/var/log`)
+  - `@cache` - System cache (`/var/cache`)
+  - `@tmp` - Persisted temporary files (`/var/tmp`)
+  - `@srv` - Service data (`/srv`)
+
+All subvolumes use zstd compression and are optimized for SSD with `noatime`.
+
+## Adding a New Host
+
+1. Create the host configuration:
    ```bash
-   nixos-install --flake github:syvanpera/tiniminix#laptop
+   touch hosts/<host>.nix
    ```
 
-## Hardware
-- `laptop`: Generic Intel/AMD configuration.
-- `laptop-nvidia`: Same as above + NVIDIA drivers enabled.
+2. Add to `flake.nix`:
+   ```nix
+   nixosConfigurations = {
+     <host> = nixpkgs.lib.nixosSystem {
+       system = "x86_64-linux";
+       specialArgs = { inherit inputs; };
+       modules = [
+         ./modules/disko.nix
+         ./modules/common.nix
+         ./modules/users.nix
+         ./hosts/<host>.nix
+       ];
+     };
+   };
+   ```
 
-## Core Software
-- **Compositor**: Niri
-- **Terminal**: Ghostty
-- **Browser**: Zen Browser
+## System Updates
+
+```bash
+# Update flake inputs
+nix flake update
+
+# Rebuild system
+sudo nixos-rebuild switch --flake .#hostname
+```
+
+## Documentation
+
+- [Installation Guide](INSTALL.md) - Complete installation instructions
+- [Quick Reference](REFERENCE.md) - Common commands and operations
+- [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+- [Disko](https://github.com/nix-community/disko) - Disk configuration tool
+
+## License
+
+This configuration is provided as-is for personal use. Feel free to fork and modify.
+
