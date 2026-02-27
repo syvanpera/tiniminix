@@ -73,26 +73,27 @@
 
   users.mutableUsers = true;
 
+  ## TODO: This doesn't currently work because the network isn't up when the service runs during the first boot
   # Clone this config to the target machine on first boot.
-  systemd.services.bootstrap-nix-config = {
-    description = "Bootstrap local NixOS config checkout";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-
-    serviceConfig = {
-      Type = "oneshot";
-      User = "tuomo";
-      Group = "users";
-      WorkingDirectory = "/home/tuomo";
-    };
-
-    script = ''
-      if [ ! -d /home/tuomo/.config/tiniminix/.git ]; then
-        ${pkgs.git}/bin/git clone https://github.com/syvanpera/tiniminix.git /home/tuomo/.config/tiniminix
-      fi
-    '';
-  };
+  # systemd.services.bootstrap-nix-config = {
+  #   description = "Bootstrap local NixOS config checkout";
+  #   wantedBy = [ "multi-user.target" ];
+  #   after = [ "network-online.target" ];
+  #   wants = [ "network-online.target" ];
+  #
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     User = "tuomo";
+  #     Group = "users";
+  #     WorkingDirectory = "/home/tuomo";
+  #   };
+  #
+  #   script = ''
+  #     if [ ! -d /home/tuomo/.config/tiniminix/.git ]; then
+  #       ${pkgs.git}/bin/git clone https://github.com/syvanpera/tiniminix.git /home/tuomo/.config/tiniminix
+  #     fi
+  #   '';
+  # };
 
   # System state version
   # This should be set to the NixOS version you first installed
