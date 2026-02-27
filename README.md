@@ -58,28 +58,35 @@ The default disk layout uses:
 
 All subvolumes use zstd compression and are optimized for SSD with `noatime`.
 
-## Adding a New Host
+## Adding a New Machine
 
-1. Create the host configuration:
-   ```bash
-   touch hosts/<host>.nix
-   ```
+1. Create machine directory:
+  ```bash
+  mkdir -p machines/my-machine
+  ```
+
+2. Create machine configuration:
+  ```bash
+  cp machines/example-machine/configuration.nix machines/my-machine/
+  nano machines/my-machine/configuration.nix
+  nixos-generate-config --no-filesystems --show-hardware-config > machines/my-machine/hardware-config.nix
+  ```
 
 2. Add to `flake.nix`:
-   ```nix
-   nixosConfigurations = {
-     <host> = nixpkgs.lib.nixosSystem {
-       system = "x86_64-linux";
-       specialArgs = { inherit inputs; };
-       modules = [
-         ./modules/disko.nix
-         ./modules/common.nix
-         ./modules/users.nix
-         ./hosts/<host>.nix
-       ];
-     };
-   };
-   ```
+  ```nix
+  nixosConfigurations = {
+    my-machine = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./modules/disko.nix
+        ./modules/common.nix
+        ./modules/users.nix
+        ./machines/my-machine/configuration.nix
+      ];
+    };
+  };
+  ```
 
 ## System Updates
 

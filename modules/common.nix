@@ -64,6 +64,7 @@
     wget
     curl
     git
+    pciutils
 
     # Disk utilities
     parted

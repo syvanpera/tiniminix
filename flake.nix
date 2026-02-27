@@ -25,7 +25,7 @@
           ./modules/common.nix
           # ./modules/home-manager.nix
           ./modules/users.nix
-          ./hosts/tuxedo.nix
+          ./machines/tuxedo/configuration.nix
         ];
       };
     };
