@@ -2,6 +2,9 @@
 
 My NixOS environment configuration.
 
+> **WARNING**
+The default installer *WILL* erase your whole disk and install NixOS on it
+
 ## Features
 
 - 🗂️ **BTRFS Filesystem:** Modern copy-on-write filesystem with:

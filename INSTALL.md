@@ -2,6 +2,9 @@
 
 This guide will help you install NixOS from a USB drive using this flake configuration.
 
+> **WARNING**
+This *WILL* erase your whole disk and install NixOS on it
+
 ## Prerequisites
 
 1. A NixOS installation USB drive (download minimal image from https://nixos.org/download.html)
