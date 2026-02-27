@@ -70,8 +70,7 @@
     btrfs-progs
   ];
 
-  # Allow adding users via the normal useradd/groupadd commands
-  # users.mutableUsers = true;
+  users.mutableUsers = true;
 
   # System state version
   # This should be set to the NixOS version you first installed
